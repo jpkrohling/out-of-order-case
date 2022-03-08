@@ -1,0 +1,32 @@
+receivers:
+  opencensus: 
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        max_recv_msg_size_mib: 16
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+
+extensions:
+  health_check: {}
+
+exporters:      
+  prometheusremotewrite:
+    endpoint: "https://prometheus-blocks-prod-us-central1.grafana.net/api/prom/push"
+    headers:
+      authorization: Basic MTc3OTM5OmV5SnJJam9pWlRjME5UY3paVGs1WlRRNU0yWTFNemhoWTJGak1UVXpNamd5WkdRMk5XRTJORE15TUdGbU9TSXNJbTRpT2lKa2FXRnNjR0ZrTFhSbGMzUWlMQ0pwWkNJNk5USTVNemN4ZlE9PQ==
+
+  logging:
+
+service:
+  extensions: [health_check]
+  pipelines:
+    metrics/v1:
+      receivers: [otlp]
+      exporters: [prometheusremotewrite]
+  telemetry:
+    logs:
+      level: "debug"
